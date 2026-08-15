@@ -57,7 +57,7 @@ export const SCHEMES: Scheme[] = [
       "Individuals above 18 years, new units only (no expansion of existing units); manufacturing project cost up to ₹50 lakh, service project cost up to ₹20 lakh.",
     apply:
       "Online via the PMEGP e-Portal (kviconline.gov.in/pmegpeportal); DPR and Udyam Registration required.",
-    link: "https://kviconline.gov.in/pmegpeportal/",
+    link: "https://www.kviconline.gov.in/pmegpeportal/pmegphome/index.jsp",
   },
   {
     code: "CG-03",
