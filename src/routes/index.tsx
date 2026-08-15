@@ -11,11 +11,11 @@ export const Route = createFileRoute("/")({
         content:
           "A searchable directory of 35 Central and Gujarat government schemes, subsidies, guarantees and incentives for MSMEs — compiled by a practising Chartered Accountant.",
       },
-      { property: "og:title", content: "Udyog Sahay — Govt Scheme Directory for MSMEs" },
+      { property: "og:title", content: "Udyog Sahay — Govt Scheme Directory for MSMEs & Industry" },
       {
         property: "og:description",
         content:
-          "Central and Gujarat subsidies, guarantees and incentives for industry, organised by sector. Search, filter and check eligibility.",
+          "A searchable directory of 35 Central and Gujarat government schemes, subsidies, guarantees and incentives for MSMEs — compiled by a practising Chartered Accountant.",
       },
     ],
   }),
