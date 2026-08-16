@@ -23,6 +23,8 @@ export const Route = createFileRoute("/")({
 });
 
 const EMAIL = "capratikmehta2017@gmail.com";
+const WEB3FORMS_KEY = "5e9d1133-3db1-4166-895c-3e0003738e70";
+
 
 function Seal() {
   return (
@@ -52,6 +54,8 @@ function Index() {
   const [level, setLevel] = useState<"All" | "Central" | "Gujarat">("All");
   const [industry, setIndustry] = useState<string | null>(null);
   const [active, setActive] = useState<Scheme | null>(null);
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+
 
   const sectorCount = useMemo(
     () => new Set(SCHEMES.flatMap((s) => s.industries)).size,
@@ -80,22 +84,35 @@ function Index() {
     return () => window.removeEventListener("keydown", onKey);
   }, [active]);
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const f = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const f = new FormData(form);
     const get = (k: string) => String(f.get(k) ?? "").trim();
-    const subject = `Scheme enquiry — ${get("name")}${get("company") ? ` (${get("company")})` : ""}`;
-    const body = [
-      `Name: ${get("name")}`,
-      `Company: ${get("company")}`,
-      `Email: ${get("email")}`,
-      `Industry: ${get("industry")}`,
-      "",
-      "Query:",
-      get("query"),
-    ].join("\n");
-    window.location.href = `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    setStatus("sending");
+    try {
+      const res = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_KEY,
+          subject: `Scheme enquiry — ${get("name")}${get("company") ? ` (${get("company")})` : ""}`,
+          name: get("name"),
+          email: get("email"),
+          company: get("company"),
+          industry: get("industry"),
+          message: get("query"),
+        }),
+      });
+      const data = (await res.json()) as { success?: boolean };
+      if (!res.ok || !data.success) throw new Error("failed");
+      setStatus("sent");
+      form.reset();
+    } catch {
+      setStatus("error");
+    }
   };
+
 
   return (
     <div className="min-h-screen bg-paper text-ink">
@@ -299,10 +316,22 @@ function Index() {
             </label>
             <button
               type="submit"
-              className="eyebrow mt-1 justify-self-start bg-gold px-6 py-3 font-medium text-navy-deep transition-colors hover:bg-gold-deep hover:text-paper"
+              disabled={status === "sending"}
+              className="eyebrow mt-1 justify-self-start bg-gold px-6 py-3 font-medium text-navy-deep transition-colors hover:bg-gold-deep hover:text-paper disabled:opacity-60"
             >
-              Send enquiry
+              {status === "sending" ? "Sending…" : "Send enquiry"}
             </button>
+            {status === "sent" && (
+              <p role="status" className="text-sm text-gold">
+                Thank you — your enquiry has been sent. You'll receive a reply by email.
+              </p>
+            )}
+            {status === "error" && (
+              <p role="alert" className="text-sm text-paper/80">
+                Something went wrong. Please try again, or write directly to {EMAIL}.
+              </p>
+            )}
+
           </form>
         </div>
       </section>
