@@ -316,10 +316,22 @@ function Index() {
             </label>
             <button
               type="submit"
-              className="eyebrow mt-1 justify-self-start bg-gold px-6 py-3 font-medium text-navy-deep transition-colors hover:bg-gold-deep hover:text-paper"
+              disabled={status === "sending"}
+              className="eyebrow mt-1 justify-self-start bg-gold px-6 py-3 font-medium text-navy-deep transition-colors hover:bg-gold-deep hover:text-paper disabled:opacity-60"
             >
-              Send enquiry
+              {status === "sending" ? "Sending…" : "Send enquiry"}
             </button>
+            {status === "sent" && (
+              <p role="status" className="text-sm text-gold">
+                Thank you — your enquiry has been sent. You'll receive a reply by email.
+              </p>
+            )}
+            {status === "error" && (
+              <p role="alert" className="text-sm text-paper/80">
+                Something went wrong. Please try again, or write directly to {EMAIL}.
+              </p>
+            )}
+
           </form>
         </div>
       </section>
