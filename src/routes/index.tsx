@@ -54,6 +54,8 @@ function Index() {
   const [level, setLevel] = useState<"All" | "Central" | "Gujarat">("All");
   const [industry, setIndustry] = useState<string | null>(null);
   const [active, setActive] = useState<Scheme | null>(null);
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+
 
   const sectorCount = useMemo(
     () => new Set(SCHEMES.flatMap((s) => s.industries)).size,
