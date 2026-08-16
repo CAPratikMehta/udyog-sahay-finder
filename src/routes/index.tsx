@@ -80,22 +80,35 @@ function Index() {
     return () => window.removeEventListener("keydown", onKey);
   }, [active]);
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const f = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const f = new FormData(form);
     const get = (k: string) => String(f.get(k) ?? "").trim();
-    const subject = `Scheme enquiry — ${get("name")}${get("company") ? ` (${get("company")})` : ""}`;
-    const body = [
-      `Name: ${get("name")}`,
-      `Company: ${get("company")}`,
-      `Email: ${get("email")}`,
-      `Industry: ${get("industry")}`,
-      "",
-      "Query:",
-      get("query"),
-    ].join("\n");
-    window.location.href = `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    setStatus("sending");
+    try {
+      const res = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_KEY,
+          subject: `Scheme enquiry — ${get("name")}${get("company") ? ` (${get("company")})` : ""}`,
+          name: get("name"),
+          email: get("email"),
+          company: get("company"),
+          industry: get("industry"),
+          message: get("query"),
+        }),
+      });
+      const data = (await res.json()) as { success?: boolean };
+      if (!res.ok || !data.success) throw new Error("failed");
+      setStatus("sent");
+      form.reset();
+    } catch {
+      setStatus("error");
+    }
   };
+
 
   return (
     <div className="min-h-screen bg-paper text-ink">
