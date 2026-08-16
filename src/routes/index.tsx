@@ -23,6 +23,8 @@ export const Route = createFileRoute("/")({
 });
 
 const EMAIL = "capratikmehta2017@gmail.com";
+const WEB3FORMS_KEY = "5e9d1133-3db1-4166-895c-3e0003738e70";
+
 
 function Seal() {
   return (
